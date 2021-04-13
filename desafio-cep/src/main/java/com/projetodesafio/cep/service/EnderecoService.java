@@ -11,25 +11,28 @@ import com.projetodesafio.cep.model.Endereco;
 public class EnderecoService {
 	static String urlCep = "https://viacep.com.br/ws/";
 
-	
-	public ResponseEntity <?> getEnderecoCep(String cep) {
+	public ResponseEntity<?> getEnderecoCep(String cep) {
 		try {
 			if (cep.length() == 8) {
-			String buscaCepJson = urlCep + cep + "/json";
+				String buscaCepJson = urlCep + cep + "/json";
 
-			RestTemplate restTemplate = new RestTemplate();
-			Endereco response = restTemplate.getForObject(buscaCepJson, Endereco.class);
-			return new ResponseEntity<Endereco>(response,HttpStatus.OK);
-		}else {
-			return new ResponseEntity<>("CEP não encontrado, por favor informe um CEP válido novamente.",HttpStatus.OK);
-			
+				RestTemplate restTemplate = new RestTemplate();
+				Endereco response = restTemplate.getForObject(buscaCepJson, Endereco.class);
+				if (response.getCep() == null || response.getCep().trim().isEmpty()) {
+					return new ResponseEntity<>("CEP não existe, por favor digite um CEP válido.",HttpStatus.OK);
+				}
+
+				return new ResponseEntity<Endereco>(response, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<>("CEP não encontrado, por favor informe um CEP válido novamente.",HttpStatus.OK);
+
+			}
+
+		} catch (Exception e) {
+
+			return new ResponseEntity<>("Erro ao buscar o CEP, por favor informe um CEP válido.", HttpStatus.OK);
 		}
-			
-		}catch (Exception e) {
-			
-		return new ResponseEntity<>("Erro ao buscar o CEP, por favor informe um CEP válido.",HttpStatus.OK);
-		}
-		
+
 	}
 
 }
